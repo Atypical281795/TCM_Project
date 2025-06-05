@@ -26,7 +26,7 @@ def quick_evaluation():
     """快速評測函數"""
     
     # 配置參數 - 請根據你的實際情況修改
-    MODEL_PATH = r"C:\Users\user\Desktop\TCM_Project\SFT_weights\Breeze_lindan_TCPM_QA"
+    MODEL_PATH = r"D:\TCM_SFT_Weight\weights\Breeze_lindan_TCPM_QA"
     DATASET_PATH = "tcm_exam_question.csv"
     OUTPUT_DIR = "quick_evaluation_results"
     SAMPLE_SIZE = 500  # 快速測試用較小樣本，設為 None 使用全部數據
@@ -108,8 +108,8 @@ def compare_models():
     """模型比較範例"""
     
     # 配置 - 請根據實際情況修改
-    MODEL1_PATH = r"C:\Users\user\Desktop\專題\SFT_weights\Breeze_lindan TCPM QA"  # 你的微調模型
-    MODEL2_PATH = r"C:\Users\user\Desktop\專題\SFT_weights\Breeze_lindan TCPM QA"  # 基礎模型（如果有的話）
+    MODEL1_PATH = r"D:\TCM_SFT_Weight\weights\Breeze_lindan_TCPM_QA"  # 你的微調模型
+    MODEL2_PATH = r"D:\TCM_SFT_Weight\weights\Breeze_lindan_TCPM_QA"  # 基礎模型（如果有的話）
     DATASET_PATH = "tcm_exam_question.csv"
     OUTPUT_DIR = "model_comparison_results"
     SAMPLE_SIZE = 300  # 比較時建議使用較小樣本以節省時間
