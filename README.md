@@ -13,7 +13,7 @@
 
 ```bash
 # 創建虛擬環境（推薦）
-conda create -n tcm_eval python=3.9
+conda create -n tcm_eval python==3.9
 conda activate tcm_eval
 
 # 或使用 venv
