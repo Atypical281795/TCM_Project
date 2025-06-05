@@ -32,7 +32,7 @@ pip install pandas numpy scipy matplotlib seaborn
 # 模型推理依賴（根據你的模型選擇）
 # 如果使用 Transformers + PyTorch
 pip install accelerate protobuf sentencepiece
-pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+pip install torch==2.2.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cu121
 pip install transformers==4.36.0
 pip install markupsafe==2.1.3
 pip install jinja2==3.1.2
