@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 中醫問答模型評測系統
-支援多種評測指標、成對樣本t檢定、詳細報告生成
+支援多種評測指標、成對樣本 t 檢定、詳細報告生成
 """
 
 import os
@@ -106,10 +106,18 @@ class TCMEvaluationSystem:
         
         # 載入數據集
         self.dataset = self.load_dataset()
-        
+
         # 載入模型 (如果使用transformers)
         self.model = None
         self.tokenizer = None
+        self.model_info = {
+            'requested_path': model_path,
+            'actual_model': None,
+            'model_type': None,
+            'loading_method': None,
+            'device': None,
+            'status': 'not_loaded'
+        }
         if TRANSFORMERS_AVAILABLE:
             self.load_model()
     
@@ -182,7 +190,7 @@ class TCMEvaluationSystem:
             # 首先嘗試標準載入方式
             try:
                 self.tokenizer = AutoTokenizer.from_pretrained(
-                    self.model_path, 
+                    self.model_path,
                     trust_remote_code=True,
                     use_fast=False  # 使用慢速 tokenizer
                 )
@@ -193,7 +201,13 @@ class TCMEvaluationSystem:
                     trust_remote_code=True
                 )
                 self.logger.info("使用 AutoModel 載入成功")
-                
+
+                self.model_info['actual_model'] = str(self.model_path)
+                self.model_info['model_type'] = type(self.model).__name__
+                self.model_info['loading_method'] = 'AutoModelForCausalLM'
+                self.model_info['device'] = str(next(self.model.parameters()).device)
+                self.model_info['status'] = 'loaded_successfully'
+
             except Exception as e1:
                 self.logger.warning(f"AutoModel 載入失敗: {e1}")
                 self.logger.info("嘗試使用 LlamaForCausalLM...")
@@ -208,6 +222,12 @@ class TCMEvaluationSystem:
                     device_map="auto"
                 )
                 self.logger.info("使用 LlamaForCausalLM 載入成功")
+
+                self.model_info['actual_model'] = str(self.model_path)
+                self.model_info['model_type'] = 'LlamaForCausalLM'
+                self.model_info['loading_method'] = 'LlamaForCausalLM'
+                self.model_info['device'] = str(next(self.model.parameters()).device)
+                self.model_info['status'] = 'loaded_successfully'
             
             # 設置特殊token
             if self.tokenizer.pad_token is None:
@@ -228,6 +248,9 @@ class TCMEvaluationSystem:
             self.tokenizer = None
             # 不要默默使用模擬模式，而是提醒用戶
             self.logger.warning("⚠️  將使用隨機答案模式進行測試")
+            self.model_info['status'] = 'failed_to_load'
+            self.model_info['actual_model'] = 'SIMULATION_MODE'
+            self.model_info['loading_method'] = 'random_answers'
     
     def format_prompt(self, question: str) -> str:
         """格式化提示詞"""
@@ -618,6 +641,7 @@ class TCMEvaluationSystem:
                 'total_questions_in_dataset': len(self.dataset),
                 'evaluated_questions': len(results)
             },
+            'model_info': self.model_info,
             'metrics': metrics,
             't_test_result': t_test_result
         }
@@ -640,6 +664,16 @@ class TCMEvaluationSystem:
         report_lines.append(f"評測時間: {timestamp}")
         report_lines.append(f"模型路徑: {self.model_path}")
         report_lines.append(f"資料集路徑: {self.dataset_path}")
+        report_lines.append("")
+
+        # 模型資訊
+        report_lines.append("模型載入資訊:")
+        report_lines.append(f"  請求的模型路徑: {self.model_info['requested_path']}")
+        report_lines.append(f"  實際使用的模型: {self.model_info['actual_model']}")
+        report_lines.append(f"  模型類型: {self.model_info['model_type']}")
+        report_lines.append(f"  載入方式: {self.model_info['loading_method']}")
+        report_lines.append(f"  運行設備: {self.model_info['device']}")
+        report_lines.append(f"  載入狀態: {self.model_info['status']}")
         report_lines.append("")
         
         # 整體表現
