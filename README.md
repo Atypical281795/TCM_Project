@@ -106,8 +106,8 @@ python tcm_evaluation.py --model_path "你的模型路徑" --dataset_path "tcm_e
 ### 支援的模型格式
 
 1. **Transformers 格式** (推薦)
-   - Llama, Qwen, ChatGLM 等
-   - 使用 AutoModelForCausalLM 載入
+   - Llama, Qwen, ChatGLM、Baichuan 等
+   - 使用 AutoModelForCausalLM 載入（Baichuan 模型會自動嘗試 `BaichuanForCausalLM`）
 
 2. **自定義格式**
    - 修改 `get_model_answer()` 方法
