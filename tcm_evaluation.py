@@ -137,7 +137,8 @@ class TCMEvaluationSystem:
     def load_dataset(self) -> pd.DataFrame:
         """載入中醫問答資料集"""
         try:
-            df = pd.read_csv(self.dataset_path, encoding='utf-8')
+            # 使用 utf-8-sig 以正確處理含 BOM 的 CSV 檔
+            df = pd.read_csv(self.dataset_path, encoding='utf-8-sig')
             self.logger.info(f"成功載入資料集，共 {len(df)} 筆題目")
             
             # 清理數據
@@ -860,7 +861,8 @@ class ModelComparator:
     
     def load_evaluation_results(self, result_file: str) -> List[EvaluationResult]:
         """載入評測結果"""
-        df = pd.read_csv(self.results_dir / result_file)
+        # 評測結果以 utf-8-sig 編碼保存，讀取時需指定相同編碼
+        df = pd.read_csv(self.results_dir / result_file, encoding='utf-8-sig')
         
         results = []
         for _, row in df.iterrows():
