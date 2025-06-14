@@ -211,24 +211,50 @@ class TCMEvaluationSystem:
 
             except Exception as e1:
                 self.logger.warning(f"AutoModel 載入失敗: {e1}")
-                self.logger.info("嘗試使用 LlamaForCausalLM...")
-                
-                # 嘗試 Llama 模型載入方式
-                from transformers import LlamaTokenizer, LlamaForCausalLM
-                
-                self.tokenizer = LlamaTokenizer.from_pretrained(self.model_path)
-                self.model = LlamaForCausalLM.from_pretrained(
-                    self.model_path,
-                    torch_dtype=torch.float16,
-                    device_map="auto"
-                )
-                self.logger.info("使用 LlamaForCausalLM 載入成功")
 
-                self.model_info['actual_model'] = str(self.model_path)
-                self.model_info['model_type'] = 'LlamaForCausalLM'
-                self.model_info['loading_method'] = 'LlamaForCausalLM'
-                self.model_info['device'] = str(next(self.model.parameters()).device)
-                self.model_info['status'] = 'loaded_successfully'
+                # 嘗試 Baichuan 模型載入方式
+                try:
+                    self.logger.info("嘗試使用 BaichuanForCausalLM...")
+                    from transformers import BaichuanTokenizer, BaichuanForCausalLM
+
+                    self.tokenizer = BaichuanTokenizer.from_pretrained(
+                        self.model_path,
+                        use_fast=False,
+                        trust_remote_code=True
+                    )
+                    self.model = BaichuanForCausalLM.from_pretrained(
+                        self.model_path,
+                        torch_dtype=torch.float16,
+                        device_map="auto",
+                        trust_remote_code=True
+                    )
+                    self.logger.info("使用 BaichuanForCausalLM 載入成功")
+
+                    self.model_info['actual_model'] = str(self.model_path)
+                    self.model_info['model_type'] = 'BaichuanForCausalLM'
+                    self.model_info['loading_method'] = 'BaichuanForCausalLM'
+                    self.model_info['device'] = str(next(self.model.parameters()).device)
+                    self.model_info['status'] = 'loaded_successfully'
+
+                except Exception as e2:
+                    self.logger.warning(f"Baichuan 載入失敗: {e2}")
+                    self.logger.info("嘗試使用 LlamaForCausalLM...")
+
+                    from transformers import LlamaTokenizer, LlamaForCausalLM
+
+                    self.tokenizer = LlamaTokenizer.from_pretrained(self.model_path)
+                    self.model = LlamaForCausalLM.from_pretrained(
+                        self.model_path,
+                        torch_dtype=torch.float16,
+                        device_map="auto"
+                    )
+                    self.logger.info("使用 LlamaForCausalLM 載入成功")
+
+                    self.model_info['actual_model'] = str(self.model_path)
+                    self.model_info['model_type'] = 'LlamaForCausalLM'
+                    self.model_info['loading_method'] = 'LlamaForCausalLM'
+                    self.model_info['device'] = str(next(self.model.parameters()).device)
+                    self.model_info['status'] = 'loaded_successfully'
             
             # 設置特殊token
             if self.tokenizer.pad_token is None:
